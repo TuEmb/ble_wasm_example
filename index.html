@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BLE Scanner</title>
+</head>
+<body>
+  <h1>Web BLE Scanner</h1>
+  <button onclick="scan()">Scan BLE Devices</button>
+
+  <script type="module">
+    import init, { scan_ble_devices } from "./pkg/web_bluetooth_rust.js";
+
+    async function scan() {
+      await init();
+      await scan_ble_devices();
+    }
+
+    // ✅ Make it globally available for the onclick
+    window.scan = scan;
+  </script>
+</body>
+</html>
