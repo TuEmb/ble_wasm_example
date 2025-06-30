@@ -6,7 +6,62 @@
 </head>
 <body>
   <h1>Web BLE Scanner</h1>
-  <button onclick="scan()">Scan BLE Devices</button>
+  <button id="scan-btn">Scan BLE Devices</button>
+
+  <div id="metrics-container" style="display:none;">
+    <div class="metrics-card">
+      <div class="metrics-title">Step Metrics</div>
+      <div class="metric-row">
+        <span class="metric-label">Step Count:</span>
+        <span class="metric-value" id="step-count">0</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Speed (m/s):</span>
+        <span class="metric-value" id="speed">0.00</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Step Length (m):</span>
+        <span class="metric-value" id="step-length">0.00</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Stride Length (m):</span>
+        <span class="metric-value" id="stride-length">0.00</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Cadence (steps/min):</span>
+        <span class="metric-value" id="cadence">0</span>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .metrics-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 32px 40px;
+      min-width: 320px;
+      margin: 32px auto 0 auto;
+    }
+    .metrics-title {
+      font-size: 1.5em;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      font-size: 1.1em;
+    }
+    .metric-label {
+      color: #555;
+    }
+    .metric-value {
+      font-weight: bold;
+      color: #222;
+    }
+  </style>
 
   <script type="module">
     import init, { scan_ble_devices } from "./pkg/web_bluetooth_rust.js";
@@ -14,10 +69,13 @@
     async function scan() {
       await init();
       await scan_ble_devices();
+      // After successful BLE connection, show metrics UI and hide scan button
+      document.getElementById('scan-btn').style.display = 'none';
+      document.getElementById('metrics-container').style.display = 'block';
     }
 
-    // ✅ Make it globally available for the onclick
-    window.scan = scan;
+    // Add event listener instead of relying on onclick
+    document.getElementById('scan-btn').addEventListener('click', scan);
   </script>
 </body>
 </html>
