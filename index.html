@@ -5,7 +5,7 @@
   <title>BLE Scanner</title>
 </head>
 <body>
-  <h1>Web BLE Scanner</h1>
+  <h1>Kinis Step</h1>
   <button id="scan-btn">Scan BLE Devices</button>
 
   <div id="metrics-container" style="display:none;">
@@ -20,12 +20,12 @@
         <span class="metric-value" id="speed">0.00</span>
       </div>
       <div class="metric-row">
-        <span class="metric-label">Step Length (m):</span>
-        <span class="metric-value" id="step-length">0.00</span>
+        <span class="metric-label">Max Step Length (m):</span>
+        <span class="metric-value" id="max-step-length">0.00</span>
       </div>
       <div class="metric-row">
-        <span class="metric-label">Stride Length (m):</span>
-        <span class="metric-value" id="stride-length">0.00</span>
+        <span class="metric-label">Distance (m):</span>
+        <span class="metric-value" id="distance">0.00</span>
       </div>
       <div class="metric-row">
         <span class="metric-label">Cadence (steps/min):</span>
@@ -64,18 +64,36 @@
   </style>
 
   <script type="module">
-    import init, { scan_ble_devices } from "./pkg/web_bluetooth_rust.js";
+    import init, { set_metrics_callback, scan_ble_devices } from "./pkg/web_bluetooth_rust.js";
 
-    async function scan() {
+    async function main() {
       await init();
-      await scan_ble_devices();
+      set_metrics_callback(function(metrics) {
+        console.log('Metrics received from Rust:', metrics);
+        if (metrics["step-count"] !== undefined) {
+          document.getElementById('step-count').textContent = metrics["step-count"];
+        }
+        if (metrics["speed"] !== undefined) {
+          document.getElementById('speed').textContent = metrics["speed"].toFixed(2);
+        }
+        if (metrics["max-step-length"] !== undefined) {
+          document.getElementById('max-step-length').textContent = metrics["max-step-length"];
+        }
+        if (metrics["distance"] !== undefined) {
+          document.getElementById('distance').textContent = metrics["distance"].toFixed(2);
+        }
+        if (metrics["cadence"] !== undefined) {
+          document.getElementById('cadence').textContent = metrics["cadence"];
+        }
+      });
+      scan_ble_devices();
       // After successful BLE connection, show metrics UI and hide scan button
       document.getElementById('scan-btn').style.display = 'none';
       document.getElementById('metrics-container').style.display = 'block';
     }
 
     // Add event listener instead of relying on onclick
-    document.getElementById('scan-btn').addEventListener('click', scan);
+    document.getElementById('scan-btn').addEventListener('click', main);
   </script>
 </body>
 </html>
