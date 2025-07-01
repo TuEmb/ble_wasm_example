@@ -60,12 +60,12 @@
         </div>
         <div class="metric-item">
           <div class="metric-label">Speed</div>
-          <div class="metric-value" id="speed">T.B.D</div>
+          <div class="metric-value" id="speed">0.00</div>
           <div class="metric-unit">m/s</div>
         </div>
         <div class="metric-item">
           <div class="metric-label">Max Step Length</div>
-          <div class="metric-value" id="max-step-length">T.B.D</div>
+          <div class="metric-value" id="max-step-length">0.00</div>
           <div class="metric-unit">m</div>
         </div>
         <div class="metric-item">
@@ -75,7 +75,7 @@
         </div>
         <div class="metric-item">
           <div class="metric-label">Cadence</div>
-          <div class="metric-value" id="cadence">T.B.D</div>
+          <div class="metric-value" id="cadence">0</div>
           <div class="metric-unit">steps/min</div>
         </div>
       </div>
@@ -358,7 +358,7 @@
           document.getElementById('speed').textContent = metrics["speed"].toFixed(2);
         }
         if (metrics["max-step-length"] !== undefined) {
-          document.getElementById('max-step-length').textContent = metrics["max-step-length"];
+          document.getElementById('max-step-length').textContent = metrics["max-step-length"].toFixed(2);
         }
         if (metrics["distance"] !== undefined) {
           document.getElementById('distance').textContent = metrics["distance"].toFixed(2);

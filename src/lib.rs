@@ -86,32 +86,36 @@ pub async fn scan_ble_devices() -> Result<(), JsValue> {
                 let protocol_id = data[1];
                 let mut metrics = Object::new();
                 match protocol_id {
-                    // 0x50 => { // State and Speed
-                    //     if data.len() >= 9 {
-                    //         let speed = f32::from_le_bytes([data[7], data[6], data[5], data[4]]);
-                    //         Reflect::set(&metrics, &"speed".into(), &JsValue::from_f64(speed as f64)).ok();
-                    //     }
-                    // },
-                    // 0x51 => { // Step Event
-                    //     if data.len() >= 13 {
-                    //         let step_length = f32::from_le_bytes([data[3], data[4], data[5], data[6]]);
-                    //         let stride_length = f32::from_le_bytes([data[7], data[8], data[9], data[10]]);
-                    //         Reflect::set(&metrics, &"step_length".into(), &JsValue::from_f64(step_length as f64)).ok();
-                    //         Reflect::set(&metrics, &"stride_length".into(), &JsValue::from_f64(stride_length as f64)).ok();
-                    //     }
-                    // },
-                    // 0x54 => { // max step length
-                    //         let max_step_length = f32::from_le_bytes([data[6], data[5], data[4], data[3]]);
-                    //         Reflect::set(&metrics, &"max-step-length".into(),&JsValue::from_f64(max_step_length as f64)).ok();
-                    //         web_sys::console::log_1(&format!("max-step-length: {}", max_step_length).into());
-                    // },
-                    // 0x55 => { // cadence
-                    //     // if data.len() == 10 {
-                    //         let cadence = u16::from_le_bytes([data[4], data[3]]);
-                    //         Reflect::set(&metrics, &"cadence".into(),&JsValue::from(cadence)).ok();
-                    //         web_sys::console::log_1(&format!("cadence: {}", cadence).into());
-                    //     // }
-                    // },
+                    0x30 => { // battery
+                        let soc = u16::from_le_bytes([data[4], data[3]]);
+                        Reflect::set(&metrics, &"battery".into(), &JsValue::from(soc)).ok();
+                    },
+                    0x50 => { // State and Speed
+                        if data.len() >= 9 {
+                            let speed = f32::from_le_bytes([data[7], data[6], data[5], data[4]]);
+                            Reflect::set(&metrics, &"speed".into(), &JsValue::from_f64(speed as f64)).ok();
+                        }
+                    },
+                    0x51 => { // Step Event
+                        if data.len() >= 13 {
+                            let step_length = f32::from_le_bytes([data[3], data[4], data[5], data[6]]);
+                            let stride_length = f32::from_le_bytes([data[7], data[8], data[9], data[10]]);
+                            Reflect::set(&metrics, &"step_length".into(), &JsValue::from_f64(step_length as f64)).ok();
+                            Reflect::set(&metrics, &"stride_length".into(), &JsValue::from_f64(stride_length as f64)).ok();
+                        }
+                    },
+                    0x54 => { // max step length
+                            let max_step_length = f32::from_le_bytes([data[6], data[5], data[4], data[3]]);
+                            Reflect::set(&metrics, &"max-step-length".into(),&JsValue::from_f64(max_step_length as f64)).ok();
+                            web_sys::console::log_1(&format!("max-step-length: {}", max_step_length).into());
+                    },
+                    0x55 => { // cadence
+                        // if data.len() == 10 {
+                            let cadence = u16::from_le_bytes([data[4], data[3]]);
+                            Reflect::set(&metrics, &"cadence".into(),&JsValue::from(cadence)).ok();
+                            web_sys::console::log_1(&format!("cadence: {}", cadence).into());
+                        // }
+                    },
                     0x56 => { // distance
                         if data.len() == 10 {
                             let distance = f32::from_le_bytes([data[6], data[5], data[4], data[3]]);
