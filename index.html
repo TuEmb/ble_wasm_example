@@ -2,74 +2,355 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BLE Scanner</title>
+  <title>Kinis Step BLE Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Kinis Step</h1>
-  <button id="scan-btn">Scan BLE Devices</button>
+  <header>
+    <h1>
+      <img src="https://img.icons8.com/ios-filled/50/1976d2/walking.png" alt="Step Icon" style="vertical-align:middle;width:44px;height:44px;margin-right:12px;">
+      <span>Kinis Step</span>
+    </h1>
+    <div class="subtitle">Smart BLE Gait &amp; Fitness Metrics</div>
+  </header>
 
-  <div id="metrics-container" style="display:none;">
-    <div class="metrics-card">
-      <div class="metrics-title">Step Metrics</div>
-      <div class="metric-row">
-        <span class="metric-label">Step Count:</span>
-        <span class="metric-value" id="step-count">0</span>
-      </div>
-      <div class="metric-row">
-        <span class="metric-label">Speed (m/s):</span>
-        <span class="metric-value" id="speed">0.00</span>
-      </div>
-      <div class="metric-row">
-        <span class="metric-label">Max Step Length (m):</span>
-        <span class="metric-value" id="max-step-length">0.00</span>
-      </div>
-      <div class="metric-row">
-        <span class="metric-label">Distance (m):</span>
-        <span class="metric-value" id="distance">0.00</span>
-      </div>
-      <div class="metric-row">
-        <span class="metric-label">Cadence (steps/min):</span>
-        <span class="metric-value" id="cadence">0</span>
+  <!-- Battery Indicator -->
+  <div id="battery-container" style="display:none; text-align:center; margin-top:32px;">
+    <div class="battery-progress">
+      <svg width="110" height="110">
+        <defs>
+          <linearGradient id="battery-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#4caf50"/>
+            <stop offset="100%" stop-color="#1976d2"/>
+          </linearGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <circle class="battery-bg" cx="55" cy="55" r="46" stroke-width="12" fill="none" />
+        <circle class="battery-bar" cx="55" cy="55" r="46" stroke-width="12" fill="none" stroke="url(#battery-gradient)" filter="url(#glow)" />
+      </svg>
+      <div class="battery-label">
+        <span id="battery-percentage">--</span>%<br>
+        <span style="font-size:0.8em; color:#888;">Battery</span>
       </div>
     </div>
   </div>
 
+  <button id="scan-btn" class="fancy-btn">
+    <span>🔍 Scan BLE Devices</span>
+  </button>
+
+  <div id="metrics-container" style="display:none;">
+    <div class="metrics-card">
+      <div class="metrics-title">
+        <span class="metrics-icon">📊</span>
+        Step Metrics
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-item accent">
+          <div class="metric-label">Step Count</div>
+          <div class="metric-value" id="step-count">0</div>
+          <div class="metric-unit">steps</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Speed</div>
+          <div class="metric-value" id="speed">T.B.D</div>
+          <div class="metric-unit">m/s</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Max Step Length</div>
+          <div class="metric-value" id="max-step-length">T.B.D</div>
+          <div class="metric-unit">m</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Distance</div>
+          <div class="metric-value" id="distance">0.00</div>
+          <div class="metric-unit">m</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Cadence</div>
+          <div class="metric-value" id="cadence">T.B.D</div>
+          <div class="metric-unit">steps/min</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <span>🚀 Powered by <b>Kinis Step BLE</b> | <span style="color:#1976d2;">Innovation in Motion</span></span>
+    </div>
+  </footer>
+
   <style>
+    body {
+      background: linear-gradient(135deg, #e3f0ff 0%, #f4f7fa 100%);
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      position: relative;
+    }
+    header {
+      background: linear-gradient(90deg, #1976d2 60%, #4caf50 100%);
+      padding: 0 0 28px 0;
+      border-radius: 0 0 36px 36px;
+      box-shadow: 0 6px 32px rgba(25, 118, 210, 0.13);
+      margin-bottom: 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    h1 {
+      color: #fff;
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      font-size: 2.5em;
+      font-weight: 700;
+      margin: 0;
+      padding: 38px 0 0 0;
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .subtitle {
+      color: #e3f0ff;
+      font-size: 1.15em;
+      margin-top: 8px;
+      font-family: 'Roboto', Arial, sans-serif;
+      letter-spacing: 1px;
+      opacity: 0.85;
+    }
+    .fancy-btn {
+      display: block;
+      margin: 36px auto 0 auto;
+      padding: 18px 44px;
+      font-size: 1.25em;
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(90deg, #1976d2 0%, #4caf50 100%);
+      border: none;
+      border-radius: 36px;
+      box-shadow: 0 4px 18px rgba(25, 118, 210, 0.15);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+      outline: none;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+    .fancy-btn span {
+      position: relative;
+      z-index: 2;
+    }
+    .fancy-btn::before {
+      content: "";
+      position: absolute;
+      left: -75%;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: rgba(255,255,255,0.18);
+      transform: skewX(-20deg);
+      transition: left 0.4s cubic-bezier(.4,2,.6,1);
+      z-index: 1;
+    }
+    .fancy-btn:hover {
+      background: linear-gradient(90deg, #4caf50 0%, #1976d2 100%);
+      transform: translateY(-3px) scale(1.045);
+      box-shadow: 0 8px 32px rgba(25, 118, 210, 0.18);
+    }
+    .fancy-btn:hover::before {
+      left: 120%;
+    }
+    .battery-progress {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 18px;
+      margin-top: 8px;
+    }
+    .battery-progress svg {
+      transform: rotate(-90deg);
+    }
+    .battery-bg {
+      stroke: #e0e0e0;
+    }
+    .battery-bar {
+      stroke: url(#battery-gradient);
+      stroke-dasharray: 289.03;
+      stroke-dashoffset: 289.03;
+      transition: stroke-dashoffset 0.7s cubic-bezier(.4,2,.6,1);
+      filter: drop-shadow(0 0 12px #4caf50aa);
+    }
+    .battery-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.6em;
+      font-weight: bold;
+      color: #1976d2;
+      text-align: center;
+      pointer-events: none;
+      user-select: none;
+      width: 110px;
+      text-shadow: 0 2px 8px #fff8;
+    }
     .metrics-card {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 32px 40px;
-      min-width: 320px;
-      margin: 32px auto 0 auto;
+      border-radius: 28px;
+      box-shadow: 0 10px 40px rgba(25, 118, 210, 0.13);
+      padding: 44px 48px 32px 48px;
+      min-width: 340px;
+      margin: 48px auto 0 auto;
+      max-width: 520px;
+      animation: fadeIn 0.8s cubic-bezier(.4,2,.6,1);
+      position: relative;
     }
     .metrics-title {
-      font-size: 1.5em;
-      margin-bottom: 24px;
+      font-size: 2em;
+      margin-bottom: 32px;
       text-align: center;
-    }
-    .metric-row {
+      color: #1976d2;
+      letter-spacing: 1.2px;
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      font-weight: 700;
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      font-size: 1.1em;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .metrics-icon {
+      font-size: 1.2em;
+      margin-right: 4px;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px 36px;
+    }
+    .metric-item {
+      background: linear-gradient(120deg, #f4f7fa 60%, #e3f0ff 100%);
+      border-radius: 14px;
+      padding: 22px 14px 16px 14px;
+      box-shadow: 0 2px 12px rgba(25, 118, 210, 0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 120px;
+      min-height: 90px;
+      position: relative;
+      transition: box-shadow 0.2s, transform 0.2s;
+      border: 2px solid transparent;
+    }
+    .metric-item.accent {
+      background: linear-gradient(120deg, #e3f0ff 60%, #b2ffb2 100%);
+      border: 2px solid #4caf50;
+      box-shadow: 0 4px 18px #4caf5022;
+      transform: scale(1.04);
+    }
+    .metric-item:hover {
+      box-shadow: 0 6px 24px rgba(25, 118, 210, 0.13);
+      transform: translateY(-2px) scale(1.045);
+      border: 2px solid #1976d2;
     }
     .metric-label {
       color: #555;
+      font-size: 1.08em;
+      margin-bottom: 8px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 4px #fff8;
     }
     .metric-value {
+      font-size: 1.7em;
       font-weight: bold;
-      color: #222;
+      color: #1976d2;
+      margin-bottom: 2px;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px #e3f0ff88;
+    }
+    .metric-unit {
+      font-size: 1em;
+      color: #888;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    footer {
+      margin-top: 60px;
+      padding: 24px 0 18px 0;
+      background: linear-gradient(90deg, #1976d2 60%, #4caf50 100%);
+      color: #fff;
+      text-align: center;
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      font-size: 1.1em;
+      border-radius: 32px 32px 0 0;
+      box-shadow: 0 -2px 18px rgba(25, 118, 210, 0.10);
+      letter-spacing: 1px;
+    }
+    .footer-content {
+      opacity: 0.92;
+    }
+    @media (max-width: 700px) {
+      .metrics-card {
+        min-width: unset;
+        padding: 18px 6px 12px 6px;
+        max-width: 98vw;
+      }
+      .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 14px 0;
+      }
+      .battery-label {
+        font-size: 1.15em;
+      }
+      .metrics-title {
+        font-size: 1.3em;
+      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: none;}
     }
   </style>
 
   <script type="module">
     import init, { set_metrics_callback, scan_ble_devices } from "./pkg/web_bluetooth_rust.js";
 
+    function updateBatteryUI(percent) {
+      const battery = Math.max(0, Math.min(100, percent));
+      document.getElementById('battery-percentage').textContent = battery;
+      const circle = document.querySelector('.battery-bar');
+      const radius = 46;
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference * (1 - battery / 100);
+      circle.style.strokeDasharray = `${circumference}`;
+      circle.style.strokeDashoffset = `${offset}`;
+      document.getElementById('battery-container').style.display = 'block';
+      // Color change based on battery
+      if (battery < 20) {
+        circle.style.stroke = "#e53935";
+        circle.style.filter = "drop-shadow(0 0 12px #e53935aa)";
+      } else if (battery < 50) {
+        circle.style.stroke = "#ffb300";
+        circle.style.filter = "drop-shadow(0 0 12px #ffb300aa)";
+      } else {
+        circle.style.stroke = "url(#battery-gradient)";
+        circle.style.filter = "drop-shadow(0 0 12px #4caf50aa)";
+      }
+    }
+
     async function main() {
       await init();
       set_metrics_callback(function(metrics) {
-        console.log('Metrics received from Rust:', metrics);
         if (metrics["step-count"] !== undefined) {
           document.getElementById('step-count').textContent = metrics["step-count"];
         }
@@ -85,14 +366,17 @@
         if (metrics["cadence"] !== undefined) {
           document.getElementById('cadence').textContent = metrics["cadence"];
         }
+        if (metrics["battery"] !== undefined) {
+          updateBatteryUI(metrics["battery"]);
+        }
       });
       scan_ble_devices();
       // After successful BLE connection, show metrics UI and hide scan button
       document.getElementById('scan-btn').style.display = 'none';
       document.getElementById('metrics-container').style.display = 'block';
+      document.getElementById('battery-container').style.display = 'block';
     }
 
-    // Add event listener instead of relying on onclick
     document.getElementById('scan-btn').addEventListener('click', main);
   </script>
 </body>
