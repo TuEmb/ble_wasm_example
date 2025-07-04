@@ -1,0 +1,15 @@
+{
+  "name": "web_bluetooth_rust",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "web_bluetooth_rust_bg.wasm",
+    "web_bluetooth_rust.js",
+    "web_bluetooth_rust.d.ts"
+  ],
+  "main": "web_bluetooth_rust.js",
+  "types": "web_bluetooth_rust.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

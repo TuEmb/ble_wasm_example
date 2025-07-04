@@ -30,8 +30,14 @@ pub async fn scan_ble_devices() -> Result<(), JsValue> {
     let navigator = window().unwrap().navigator();
     let bluetooth = navigator.bluetooth().ok_or_else(|| JsValue::from_str("Bluetooth API not support for this browser"))?;
 
+    // Only show devices that advertise the UART service
     let mut options = RequestDeviceOptions::new();
-    options.set_accept_all_devices(true);
+    options.set_accept_all_devices(false); // Only show devices with filters
+    let mut filters = Array::new();
+    let mut filter = Object::new();
+    Reflect::set(&filter, &JsValue::from_str("services"), &Array::of1(&JsValue::from_str(UART_SERVICE_UUID))).unwrap();
+    filters.push(&filter);
+    options.set_filters(&filters);
     options.set_optional_services(&Array::of1(&JsValue::from_str(UART_SERVICE_UUID)));
 
     let device_promise = bluetooth.request_device(&options);
@@ -98,16 +104,16 @@ pub async fn scan_ble_devices() -> Result<(), JsValue> {
                     },
                     0x51 => { // Step Event
                         if data.len() >= 13 {
-                            let step_length = f32::from_le_bytes([data[3], data[4], data[5], data[6]]);
-                            let stride_length = f32::from_le_bytes([data[7], data[8], data[9], data[10]]);
-                            Reflect::set(&metrics, &"step_length".into(), &JsValue::from_f64(step_length as f64)).ok();
-                            Reflect::set(&metrics, &"stride_length".into(), &JsValue::from_f64(stride_length as f64)).ok();
+                            let step_length = f32::from_le_bytes([data[6], data[5], data[4], data[3]]);
+                            let stride_length = f32::from_le_bytes([data[10], data[9], data[8], data[7]]);
+                            Reflect::set(&metrics, &"step-length".into(), &JsValue::from_f64(step_length as f64)).ok();
+                            Reflect::set(&metrics, &"stride-length".into(), &JsValue::from_f64(stride_length as f64)).ok();
                         }
                     },
                     0x54 => { // max step length
-                            let max_step_length = f32::from_le_bytes([data[6], data[5], data[4], data[3]]);
-                            Reflect::set(&metrics, &"max-step-length".into(),&JsValue::from_f64(max_step_length as f64)).ok();
-                            web_sys::console::log_1(&format!("max-step-length: {}", max_step_length).into());
+                            let foot_clearance = 100.0 * f32::from_le_bytes([data[6], data[5], data[4], data[3]]);
+                            Reflect::set(&metrics, &"foot-clearance".into(),&JsValue::from_f64(foot_clearance as f64)).ok();
+                            web_sys::console::log_1(&format!("foot-clearance: {}", foot_clearance).into());
                     },
                     0x55 => { // cadence
                         // if data.len() == 10 {
